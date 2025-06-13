@@ -19,8 +19,8 @@ server.listen(port, () => {
 const orders = [];
 
 // 處理 Teams 訊息
-server.post('/api/messages', (req, res) => {
-  adapter.processActivity(req, res, async (context) => {
+server.post('/api/messages', async (req, res, next) => {
+  await adapter.processActivity(req, res, async (context) => {
     if (context.activity.type === 'message') {
       const text = context.activity.text.trim();
       const match = text.match(/^\$便當[:：]?\s*(\d+)/);
@@ -32,4 +32,8 @@ server.post('/api/messages', (req, res) => {
       }
     }
   });
+
+  // 別忘記要呼叫 next()
+  await next();
 });
+
